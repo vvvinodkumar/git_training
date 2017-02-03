@@ -1,0 +1,204 @@
+[vkuma@phxsyspas01 scripts]$  rpm -qa | grep -i pam
+pam-1.1.1-22.el6.x86_64
+pam_passwdqc-1.0.5-8.el6.i686
+pam_passwdqc-1.0.5-8.el6.x86_64
+pam_krb5-2.3.11-9.el6.i686
+pam-1.1.1-22.el6.i686
+pam_pkcs11-0.6.2-15.el6.i686
+fprintd-pam-0.1-22.git04fd09cfa.el6.x86_64
+pam-devel-1.1.1-22.el6.x86_64
+pam_ldap-185-11.el6.x86_64
+perl-Authen-PAM-0.16-8.el6.x86_64
+pam-devel-1.1.1-22.el6.i686
+nss-pam-ldapd-0.7.5-32.el6.x86_64
+PyPAM-0.5.0-12.el6.x86_64
+nss-pam-ldapd-0.7.5-32.el6.i686
+pam_ldap-185-11.el6.i686
+jpam-0.4-21.el6.x86_64
+pam_krb5-2.3.11-9.el6.x86_64
+pam_pkcs11-0.6.2-15.el6.x86_64
+[vkuma@phxsyspas01 scripts]$
+
+
+[root@phxsyspas01 ~]# cat /etc/pam.d/sshd
+#%PAM-1.0
+auth       required     pam_access.so
+auth       required     pam_sepermit.so
+auth       include      password-auth
+account    required     pam_nologin.so
+account    include      password-auth
+password   include      password-auth
+# pam_selinux.so close should be the first session rule
+session    required     pam_selinux.so close
+session    required     pam_loginuid.so
+# pam_selinux.so open should only be followed by sessions to be executed in the user context
+session    required     pam_selinux.so open env_params
+session    optional     pam_keyinit.so force revoke
+session    include      password-auth
+session    required    pam_mkhomedir.so skel=/etc/skel umask=0077
+[root@phxsyspas01 ~]#
+[root@phxsyspas01 ~]#
+
+
+
+[root@phxsyspas01 ~]# cat /etc/pam.d/password-auth
+#%PAM-1.0
+# This file is auto-generated.
+# User changes will be destroyed the next time authconfig is run.
+auth        required      pam_env.so
+auth        required      pam_tally2.so file=/var/log/tallylog onerr=fail deny=6
+auth        sufficient    pam_unix.so nullok try_first_pass
+auth        requisite     pam_succeed_if.so uid >= 500 quiet
+auth        sufficient    pam_sss.so use_first_pass
+auth        required      pam_deny.so
+
+account     required      pam_unix.so broken_shadow
+account     required      pam_tally2.so
+account     sufficient    pam_localuser.so
+account     sufficient    pam_succeed_if.so uid < 500 quiet
+account     [default=bad success=ok user_unknown=ignore] pam_sss.so
+account     required      pam_permit.so
+
+password    requisite     pam_cracklib.so try_first_pass retry=3 minlen=7 difok=3 dcredit=-1 lcredit=-1 ucredit=-1 ocredit=0
+password    sufficient    pam_unix.so sha512 shadow nullok try_first_pass use_authtok
+password    sufficient    pam_sss.so use_authtok
+password    required      pam_deny.so
+
+session     optional      pam_keyinit.so revoke
+session     required      pam_limits.so
+session     [success=1 default=ignore] pam_succeed_if.so service in crond quiet use_uid
+session     required      pam_unix.so
+session     optional      pam_sss.so
+
+
+
+
+[root@phxsyspas01 ~]# cat /etc/pam.d/system-auth
+#%PAM-1.0
+# This file is auto-generated.
+# User changes will be destroyed the next time authconfig is run.
+auth        required      pam_env.so
+auth        required      pam_tally2.so file=/var/log/tallylog onerr=fail deny=6
+auth        sufficient    pam_unix.so nullok try_first_pass
+auth        requisite     pam_succeed_if.so uid >= 500 quiet
+auth        sufficient    pam_sss.so use_first_pass
+auth        required      pam_deny.so
+
+account     required      pam_unix.so broken_shadow
+account     sufficient    pam_localuser.so
+account     sufficient    pam_succeed_if.so uid < 500 quiet
+account     [default=bad success=ok user_unknown=ignore] pam_sss.so
+account     required      pam_permit.so
+
+password    requisite     pam_cracklib.so try_first_pass retry=3 minlen=7 difok=3 dcredit=-1 lcredit=-1 ocredit=0
+password    sufficient    pam_unix.so sha512 shadow nullok try_first_pass use_authtok remember=13
+password    sufficient    pam_sss.so use_authtok
+password    required      pam_deny.so
+
+session     optional      pam_keyinit.so revoke
+session     required      pam_limits.so
+session     [success=1 default=ignore] pam_succeed_if.so service in crond quiet use_uid
+session     required      pam_unix.so
+session     optional      pam_sss.so
+[root@phxsyspas01 ~]#
+[root@phxsyspas01 ~]#
+
+
+[root@phxsyspas01 ~]# cat /etc/security/access.conf
++ : root : LOCAL
++ : sndmon : ALL
++ : unixmon : ALL
++ : ipmon : ALL
++ : patrol : ALL
++ : unix_adm : ALL
++ : oradba : ALL
++ : ibmdr : ALL
++ : fndste90 : ALL
++ : sndmon: ALL
++ : pen_test: ALL
+- : ALL : ALL
+[root@phxsyspas01 ~]#
+[root@phxsyspas01 ~]#
+
+
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+rhel 5
+
+[root@phxewfpws01 ~]# rpm -qa | grep -i pam
+pam_ccreds-3-5
+pam_ccreds-3-5
+pam_pkcs11-0.5.3-26.el5
+pam_smb-1.1.7-7.2.1
+pam_passwdqc-1.0.2-1.2.2
+pam_krb5-2.2.14-22.el5
+pam_passwdqc-1.0.2-1.2.2
+pam-0.99.6.2-12.el5
+pam-devel-0.99.6.2-12.el5
+pam_pkcs11-0.5.3-26.el5
+pam_smb-1.1.7-7.2.1
+pam-0.99.6.2-12.el5
+pam-devel-0.99.6.2-12.el5
+pam_krb5-2.2.14-22.el5
+[root@phxewfpws01 ~]#
+
+
+[root@phxewfpws01 ~]# cat /etc/pam.d/sshd
+### This file is managed by Puppet - any manual edits will be lost
+#%PAM-1.0
+auth       include      system-auth
+account    required     pam_nologin.so
+account    include      system-auth
+password   include      system-auth
+session    optional     pam_keyinit.so force revoke
+session    include      system-auth
+session    required     pam_loginuid.so
+session    required    pam_mkhomedir.so skel=/etc/skel umask=0077
+[root@phxewfpws01 ~]# cat /etc/pam.d/passwor
+[root@phxewfpws01 ~]# cat /etc/pam
+[root@phxewfpws01 ~]#  cat /etc/pam.d/password-auth
+cat: /etc/pam.d/password-auth: No such file or directory
+
+[root@phxewfpws01 ~]# cat /etc/pam.d/system-auth
+#%PAM-1.0
+# This file is auto-generated.
+# User changes will be destroyed the next time authconfig is run.
+auth        required      pam_env.so
+auth        required      pam_tally2.so file=/var/log/tallylog onerr=fail deny=6
+auth        sufficient    pam_unix.so nullok try_first_pass
+auth        requisite     pam_succeed_if.so uid >= 500 quiet
+auth        sufficient    pam_ldap.so use_first_pass
+auth        required      pam_deny.so
+
+account     required      pam_unix.so broken_shadow
+account     required      pam_tally2.so
+account     sufficient    pam_localuser.so
+account     sufficient    pam_succeed_if.so uid < 500 quiet
+account     [default=bad success=ok user_unknown=ignore] pam_ldap.so
+account     required      pam_permit.so
+
+password    requisite     pam_cracklib.so try_first_pass retry=3 minlen=7 difok=3 dcredit=-1 lcredit=-1 ocredit=0
+password    sufficient    pam_unix.so sha512 shadow nullok try_first_pass use_authtok remember=13
+password    sufficient    pam_ldap.so use_authtok
+password    required      pam_deny.so
+
+session     optional      pam_keyinit.so revoke
+session     required      pam_limits.so
+session     optional      pam_mkhomedir.so
+session     [success=1 default=ignore] pam_succeed_if.so service in crond quiet use_uid
+session     required      pam_unix.so
+session     optional      pam_ldap.so
+[root@phxewfpws01 ~]#
+[root@phxewfpws01 ~]#
+[root@phxewfpws01 ~]# cat /etc/security/access.conf
++ : root : ALL
++ : unix_adm : ALL
++ : middleware : ALL
++ : appsup : ALL
++ : fndste90 : ALL
++ : sndmon : ALL
++ : unixmon : ALL
++ : ipmon : ALL
++ : ibmdr : ALL
+- : ALL : ALL
+[root@phxewfpws01 ~]#
+[root@phxewfpws01 ~]#
